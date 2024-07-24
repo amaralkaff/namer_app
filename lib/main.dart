@@ -46,7 +46,6 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = '';
-  var nextImage = '';
   var isLoading = false;
   var favorites = <String>[];
 
@@ -64,27 +63,8 @@ class MyAppState extends ChangeNotifier {
       current = data['results'][0]['url'];
       isLoading = false;
       notifyListeners();
-      preloadNextImage();
     } else {
       throw Exception('Failed to load image');
-    }
-  }
-
-  Future<void> preloadNextImage() async {
-    final url = Uri.parse('https://nekos.best/api/v2/neko');
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      nextImage = data['results'][0]['url'];
-    }
-  }
-
-  void showNextImage() {
-    if (nextImage.isNotEmpty) {
-      current = nextImage;
-      nextImage = '';
-      notifyListeners();
-      preloadNextImage();
     }
   }
 
@@ -234,7 +214,7 @@ class GeneratorPage extends StatelessWidget {
                   onPressed: isLoading
                       ? null
                       : () {
-                          appState.showNextImage();
+                          appState.getNext();
                         },
                   child: isLoading
                       ? CircularProgressIndicator(color: Colors.white)
